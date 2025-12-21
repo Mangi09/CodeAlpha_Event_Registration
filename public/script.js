@@ -1,6 +1,17 @@
 const API = "/api";
 let selectedEventId = null;
 
+/* TOAST */
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.innerText = message;
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
+}
+
 /* MODALS */
 function openModal() {
   document.getElementById("modal").style.display = "flex";
@@ -23,6 +34,15 @@ async function createNewEvent() {
   const date = document.getElementById("date").value;
   const image = document.getElementById("image").value;
 
+  const selectedDate = new Date(date);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (selectedDate < today) {
+    showToast("You cannot create an event with a past date ❌");
+    return;
+  }
+
   const res = await fetch(`${API}/events`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -30,8 +50,36 @@ async function createNewEvent() {
   });
 
   const data = await res.json();
-  alert(data.error || "Event created successfully!");
-  closeModal();
+
+  if (data.error) {
+    showToast(data.error);
+  } else {
+    showToast("Event created successfully 🎉");
+    closeModal();
+    loadEvents();
+  }
+}
+async function editEvent(id) {
+  const newTitle = prompt("Enter new event title:");
+  if (!newTitle) return;
+
+  await fetch(`/api/events/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: newTitle }),
+  });
+
+  showToast("Event updated successfully ✨");
+  loadEvents();
+}
+async function deleteEvent(id) {
+  if (!confirm("Are you sure you want to delete this event?")) return;
+
+  await fetch(`/api/events/${id}`, {
+    method: "DELETE",
+  });
+
+  showToast("Event deleted 🗑️");
   loadEvents();
 }
 
@@ -51,8 +99,40 @@ async function submitRegistration() {
   });
 
   const data = await res.json();
-  alert(data.error || "Registered successfully!");
-  closeRegister();
+
+  if (data.error) {
+    showToast(data.error);
+  } else {
+    showToast("Registered successfully ✅");
+    closeRegister();
+  }
+}
+
+/* EDIT EVENT */
+async function editEvent(id) {
+  const newTitle = prompt("Enter new event title:");
+  if (!newTitle) return;
+
+  await fetch(`${API}/events/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: newTitle }),
+  });
+
+  showToast("Event updated ✨");
+  loadEvents();
+}
+
+/* DELETE EVENT */
+async function deleteEvent(id) {
+  if (!confirm("Are you sure you want to delete this event?")) return;
+
+  await fetch(`${API}/events/${id}`, {
+    method: "DELETE",
+  });
+
+  showToast("Event deleted 🗑️");
+  loadEvents();
 }
 
 /* LOAD EVENTS */
@@ -65,18 +145,24 @@ async function loadEvents() {
 
   events.forEach((event) => {
     container.innerHTML += `
-      <div class="event-card">
-        <img src="${
-          event.image || "https://source.unsplash.com/400x300/?event"
-        }" />
-        <div class="content">
-          <span class="tag">Upcoming</span>
-          <h3>${event.title}</h3>
-          <p>${new Date(event.date).toDateString()}</p>
-          <button onclick="openRegister('${event._id}')">Register</button>
-        </div>
+  <div class="event-card">
+    <img src="${event.image || "https://source.unsplash.com/400x300/?event"}" />
+    <div class="content">
+      <span class="tag">Upcoming</span>
+      <h3>${event.title}</h3>
+      <p>${new Date(event.date).toDateString()}</p>
+
+      <button onclick="openRegister('${event._id}')">Register</button>
+
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button onclick="editEvent('${event._id}')">Edit</button>
+        <button onclick="deleteEvent('${
+          event._id
+        }')" style="background:#ff4d4f;">Delete</button>
       </div>
-    `;
+    </div>
+  </div>
+`;
   });
 }
 
