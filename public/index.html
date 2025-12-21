@@ -1,31 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Event Registration</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
 <body>
 
-  <h1>🎉 Event Registration System</h1>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <h2 class="logo">EventEase</h2>
+    <button class="create-btn" onclick="openModal()">+ Create Event</button>
+  </nav>
 
-  <div class="container">
+  <!-- HERO -->
+  <section class="hero">
+    <h1>EventEase</h1>
+  </section>
 
-    <section>
+  <!-- EVENTS -->
+  <section class="events-section">
+    <h2>Upcoming Events</h2>
+    <div id="events" class="event-grid"></div>
+  </section>
+
+  <!-- MODAL -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">×</span>
       <h2>Create Event</h2>
-      <input id="title" placeholder="Event title" />
+
+      <input id="title" placeholder="Event Title" />
       <input id="description" placeholder="Description" />
       <input id="date" type="date" />
-      <button onclick="createEvent()">Create Event</button>
-    </section>
-
-    <section>
-      <h2>Available Events</h2>
-      <div id="events"></div>
-    </section>
-
+      <button onclick="createNewEvent()">Create</button>
+    </div>
   </div>
 
   <script src="script.js"></script>
 </body>
-</html>

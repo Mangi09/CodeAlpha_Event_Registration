@@ -1,6 +1,16 @@
 const API = "/api";
 
-async function createEvent() {
+// MODAL
+function openModal() {
+  document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
+
+// CREATE EVENT
+async function createNewEvent() {
   const title = document.getElementById("title").value;
   const description = document.getElementById("description").value;
   const date = document.getElementById("date").value;
@@ -12,10 +22,12 @@ async function createEvent() {
   });
 
   const data = await res.json();
-  alert(data.error || "Event created successfully!");
+  alert(data.error || "Event created!");
+  closeModal();
   loadEvents();
 }
 
+// LOAD EVENTS
 async function loadEvents() {
   const res = await fetch(`${API}/events`);
   const events = await res.json();
@@ -24,32 +36,17 @@ async function loadEvents() {
   container.innerHTML = "";
 
   events.forEach((event) => {
-    const div = document.createElement("div");
-    div.className = "event";
-    div.innerHTML = `
-      <h3>${event.title}</h3>
-      <p>${event.description || ""}</p>
-      <p>Date: ${new Date(event.date).toDateString()}</p>
-      <input placeholder="Your name" id="name-${event._id}" />
-      <input placeholder="Your email" id="email-${event._id}" />
-      <button onclick="register('${event._id}')">Register</button>
+    container.innerHTML += `
+      <div class="event-card">
+        <img src="https://source.unsplash.com/400x300/?event" />
+        <div class="content">
+          <span class="tag">Upcoming</span>
+          <h3>${event.title}</h3>
+          <p>${new Date(event.date).toDateString()}</p>
+        </div>
+      </div>
     `;
-    container.appendChild(div);
   });
-}
-
-async function register(eventId) {
-  const name = document.getElementById(`name-${eventId}`).value;
-  const email = document.getElementById(`email-${eventId}`).value;
-
-  const res = await fetch(`${API}/registrations`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, email, event: eventId }),
-  });
-
-  const data = await res.json();
-  alert(data.error || "Registered successfully!");
 }
 
 loadEvents();
