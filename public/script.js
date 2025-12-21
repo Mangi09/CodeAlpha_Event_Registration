@@ -2,9 +2,12 @@ const API = "/api";
 let selectedEventId = null;
 
 /* TOAST */
-function showToast(message) {
+function showToast(message, type = "error") {
   const toast = document.getElementById("toast");
   toast.innerText = message;
+
+  toast.style.background = type === "success" ? "#1A659E" : "#FF4D4F";
+
   toast.classList.add("show");
 
   setTimeout(() => {
@@ -54,32 +57,45 @@ async function createNewEvent() {
   if (data.error) {
     showToast(data.error);
   } else {
-    showToast("Event created successfully 🎉");
+    showToast("Event created successfully 🎉", "success");
     closeModal();
+    clearCreateForm();
     loadEvents();
   }
 }
+
+/* CLEAR FORM */
+function clearCreateForm() {
+  document.getElementById("title").value = "";
+  document.getElementById("description").value = "";
+  document.getElementById("date").value = "";
+  document.getElementById("image").value = "";
+}
+
+/* EDIT EVENT */
 async function editEvent(id) {
   const newTitle = prompt("Enter new event title:");
   if (!newTitle) return;
 
-  await fetch(`/api/events/${id}`, {
+  await fetch(`${API}/events/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ title: newTitle }),
   });
 
-  showToast("Event updated successfully ✨");
+  showToast("Event updated ✨", "success");
   loadEvents();
 }
+
+/* DELETE EVENT */
 async function deleteEvent(id) {
   if (!confirm("Are you sure you want to delete this event?")) return;
 
-  await fetch(`/api/events/${id}`, {
+  await fetch(`${API}/events/${id}`, {
     method: "DELETE",
   });
 
-  showToast("Event deleted 🗑️");
+  showToast("Event deleted 🗑️", "success");
   loadEvents();
 }
 
@@ -103,36 +119,9 @@ async function submitRegistration() {
   if (data.error) {
     showToast(data.error);
   } else {
-    showToast("Registered successfully ✅");
+    showToast("Registered successfully ✅", "success");
     closeRegister();
   }
-}
-
-/* EDIT EVENT */
-async function editEvent(id) {
-  const newTitle = prompt("Enter new event title:");
-  if (!newTitle) return;
-
-  await fetch(`${API}/events/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title: newTitle }),
-  });
-
-  showToast("Event updated ✨");
-  loadEvents();
-}
-
-/* DELETE EVENT */
-async function deleteEvent(id) {
-  if (!confirm("Are you sure you want to delete this event?")) return;
-
-  await fetch(`${API}/events/${id}`, {
-    method: "DELETE",
-  });
-
-  showToast("Event deleted 🗑️");
-  loadEvents();
 }
 
 /* LOAD EVENTS */
@@ -145,24 +134,34 @@ async function loadEvents() {
 
   events.forEach((event) => {
     container.innerHTML += `
-  <div class="event-card">
-    <img src="${event.image || "https://source.unsplash.com/400x300/?event"}" />
-    <div class="content">
-      <span class="tag">Upcoming</span>
-      <h3>${event.title}</h3>
-      <p>${new Date(event.date).toDateString()}</p>
+      <div class="event-card">
+        <img src="${
+          event.image || "https://source.unsplash.com/400x300/?event"
+        }" />
 
-      <button onclick="openRegister('${event._id}')">Register</button>
+        <div class="content">
+          <span class="tag">Upcoming</span>
+          <h3>${event.title}</h3>
+          <p>${new Date(event.date).toDateString()}</p>
 
-      <div style="display:flex; gap:8px; margin-top:10px;">
-        <button onclick="editEvent('${event._id}')">Edit</button>
-        <button onclick="deleteEvent('${
-          event._id
-        }')" style="background:#ff4d4f;">Delete</button>
+          <button onclick="openRegister('${event._id}')">
+            Register
+          </button>
+
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <button onclick="editEvent('${event._id}')">
+              Edit
+            </button>
+            <button
+              onclick="deleteEvent('${event._id}')"
+              style="background:#ff4d4f;"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-`;
+    `;
   });
 }
 
