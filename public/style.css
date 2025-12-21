@@ -111,3 +111,13 @@ body {
   float: right;
   cursor: pointer;
 }
+.event-card button {
+  margin-top: 10px;
+  width: 100%;
+  background: #ff9800;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
