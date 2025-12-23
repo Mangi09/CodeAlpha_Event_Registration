@@ -98,6 +98,26 @@ async function deleteEvent(id) {
   showToast("Event deleted 🗑️", "success");
   loadEvents();
 }
+function launchConfetti() {
+  const confettiCount = 150;
+  const colors = ["#FF6B35", "#F7C59F", "#1A659E", "#8dd3c7", "#ffd6e8"];
+
+  for (let i = 0; i < confettiCount; i++) {
+    const confetti = document.createElement("div");
+    confetti.className = "confetti";
+
+    confetti.style.left = Math.random() * 100 + "vw";
+    confetti.style.backgroundColor =
+      colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.animationDuration = 2.5 + Math.random() * 2.5 + "s";
+
+    document.body.appendChild(confetti);
+
+    setTimeout(() => {
+      confetti.remove();
+    }, 5000);
+  }
+}
 
 /* REGISTER */
 async function submitRegistration() {
@@ -119,8 +139,12 @@ async function submitRegistration() {
   if (data.error) {
     showToast(data.error);
   } else {
-    showToast("Registered successfully ✅", "success");
+    showToast("Registered successfully 🎉", "success");
     closeRegister();
+
+    setTimeout(() => {
+      launchConfetti();
+    }, 300);
   }
 }
 

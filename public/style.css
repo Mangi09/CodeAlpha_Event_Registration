@@ -188,3 +188,24 @@ body {
   opacity: 1;
   transform: translateY(0);
 }
+.confetti {
+  position: fixed;
+  top: -20px;
+  width: 10px;
+  height: 16px;
+  opacity: 0.95;
+  z-index: 10000;
+
+  animation-name: confetti-fall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(120vh) rotate(720deg);
+  }
+}
