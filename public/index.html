@@ -56,6 +56,32 @@
 </div>
 
 <div id="toast" class="toast"></div>
+<!-- EDIT EVENT MODAL -->
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeEdit()">×</span>
+    <h2>Edit Event</h2>
+
+    <input id="editTitle" placeholder="Event Title" />
+    <input id="editDate" type="date" />
+    <button onclick="updateEvent()">Save Changes</button>
+  </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <h3>Delete Event?</h3>
+    <p>This action cannot be undone.</p>
+
+    <div style="display:flex; gap:10px; margin-top:16px;">
+      <button onclick="confirmDelete()" style="background:#ff6b6b;">
+        Yes, Delete
+      </button>
+      <button onclick="closeDelete()">Cancel</button>
+    </div>
+  </div>
+</div>
 
   <script src="script.js"></script>
 

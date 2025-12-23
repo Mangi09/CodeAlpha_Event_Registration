@@ -1,5 +1,7 @@
 const API = "/api";
 let selectedEventId = null;
+let editEventId = null;
+let deleteEventId = null;
 
 /* TOAST */
 function showToast(message, type = "error") {
@@ -73,31 +75,56 @@ function clearCreateForm() {
 }
 
 /* EDIT EVENT */
-async function editEvent(id) {
-  const newTitle = prompt("Enter new event title:");
-  if (!newTitle) return;
+function openEdit(event) {
+  editEventId = event._id;
 
-  await fetch(`${API}/events/${id}`, {
+  document.getElementById("editTitle").value = event.title;
+  document.getElementById("editDate").value = new Date(event.date)
+    .toISOString()
+    .split("T")[0];
+
+  document.getElementById("editModal").style.display = "flex";
+}
+
+function closeEdit() {
+  document.getElementById("editModal").style.display = "none";
+}
+
+async function updateEvent() {
+  const title = document.getElementById("editTitle").value;
+  const date = document.getElementById("editDate").value;
+
+  await fetch(`${API}/events/${editEventId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title: newTitle }),
+    body: JSON.stringify({ title, date }),
   });
 
   showToast("Event updated ✨", "success");
+  closeEdit();
   loadEvents();
 }
 
 /* DELETE EVENT */
-async function deleteEvent(id) {
-  if (!confirm("Are you sure you want to delete this event?")) return;
+function openDelete(id) {
+  deleteEventId = id;
+  document.getElementById("deleteModal").style.display = "flex";
+}
 
-  await fetch(`${API}/events/${id}`, {
+function closeDelete() {
+  document.getElementById("deleteModal").style.display = "none";
+}
+
+async function confirmDelete() {
+  await fetch(`${API}/events/${deleteEventId}`, {
     method: "DELETE",
   });
 
   showToast("Event deleted 🗑️", "success");
+  closeDelete();
   loadEvents();
 }
+
 function launchConfetti() {
   const confettiCount = 150;
   const colors = ["#FF6B35", "#F7C59F", "#1A659E", "#8dd3c7", "#ffd6e8"];
@@ -173,15 +200,10 @@ async function loadEvents() {
           </button>
 
           <div style="display:flex; gap:8px; margin-top:10px;">
-            <button onclick="editEvent('${event._id}')">
-              Edit
-            </button>
-            <button
-              onclick="deleteEvent('${event._id}')"
-              style="background:#ff4d4f;"
-            >
-              Delete
-            </button>
+           <button onclick='openEdit(${JSON.stringify(event)})'>Edit</button>
+<button onclick="openDelete('${event._id}')">Delete</button>
+
+
           </div>
         </div>
       </div>
